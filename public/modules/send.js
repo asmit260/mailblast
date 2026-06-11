@@ -7,17 +7,16 @@ import { buildFormData } from './composer.js';
 export function initSend(state) {
   document.getElementById('btn-initiate-transmission').addEventListener('click', () => startSend(state));
   
-  let paused = false;
-  document.getElementById('btn-pause').addEventListener('click', async () => {
-    paused = !paused;
-    const action = paused ? 'pause' : 'resume';
-    await fetch('/api/stop', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action }) });
-    document.getElementById('btn-pause').textContent = paused ? '[ RESUME ]' : '[ PAUSE ]';
+  document.getElementById('btn-pause').addEventListener('click', () => {
+    if (!state.job) return;
+    state.job.paused = !state.job.paused;
+    document.getElementById('btn-pause').textContent = state.job.paused ? '[ RESUME ]' : '[ PAUSE ]';
   });
 
-  document.getElementById('btn-stop').addEventListener('click', async () => {
+  document.getElementById('btn-stop').addEventListener('click', () => {
+    if (!state.job) return;
     if (!confirm('ABORT TRANSMISSION?')) return;
-    await fetch('/api/stop', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'stop' }) });
+    state.job.stopped = true;
     toast('TRANSMISSION ABORTED.', 'warn');
   });
 
@@ -83,74 +82,85 @@ async function startSend(state) {
   const batchSize  = parseInt(document.getElementById('batch-size').value, 10)  || 10;
   const batchDelay = parseInt(document.getElementById('batch-delay').value, 10) || 1000;
 
-  state.job = { running: true, paused: false, total: state.recipients.length, sent: 0, failed: 0, results: [] };
+  state.job = { running: true, paused: false, stopped: false, total: state.recipients.length, sent: 0, failed: 0, results: [] };
 
   document.getElementById('launch-screen').classList.add('hidden');
   document.getElementById('sending-screen').classList.remove('hidden');
   resetProgress(state);
+  
+  appendLog('> Transmission started', 'text-green');
 
-  const fd = buildFormData(state, null);
-  const config = JSON.parse(fd.get('config'));
-  config.batchSize  = batchSize;
-  config.batchDelay = batchDelay;
-  fd.set('config', JSON.stringify(config));
+  const allRecipients = state.recipients;
+  let globalIndex = 0;
 
-  try {
-    const res  = await fetch('/api/send', { method: 'POST', body: fd });
-    const data = await res.json();
-    if (!data.ok) { toast('ERR: ' + data.error, 'error'); return; }
-  } catch { toast('ERR: SERVER UNREACHABLE', 'error'); return; }
+  for (let i = 0; i < allRecipients.length; i += batchSize) {
+    if (state.job.stopped) {
+      appendLog('> Transmission aborted', 'text-amber');
+      break;
+    }
 
-  connectSSE(state);
+    while (state.job.paused && !state.job.stopped) {
+      await new Promise(r => setTimeout(r, 500));
+    }
+    
+    if (state.job.stopped) {
+      appendLog('> Transmission aborted', 'text-amber');
+      break;
+    }
+
+    const currentBatch = allRecipients.slice(i, i + batchSize);
+
+    // Build form data for just this batch
+    const fd = buildFormData(state, null);
+    const config = JSON.parse(fd.get('config'));
+    config.recipients = currentBatch;
+    fd.set('config', JSON.stringify(config));
+
+    try {
+      const res  = await fetch('/api/send', { method: 'POST', body: fd });
+      const data = await res.json();
+      
+      if (!data.ok) {
+        toast('ERR: ' + data.error, 'error');
+        appendLog('> ERR: ' + data.error, 'text-red');
+        break;
+      }
+
+      // Process results
+      data.results.forEach((r, idx) => {
+        state.job.results.push(r);
+        if (r.status === 'sent') state.job.sent++;
+        else state.job.failed++;
+        
+        updateProgress(globalIndex + idx, state);
+        appendLog(`> ${r.status === 'sent' ? 'OK' : 'ERR'} - ${r.email} - ${r.status === 'sent' ? r.duration+'ms' : r.error}`, r.status === 'sent' ? 'text-primary' : 'text-red');
+      });
+
+    } catch (err) {
+      toast('ERR: SERVER UNREACHABLE', 'error');
+      appendLog('> ERR: SERVER UNREACHABLE - ' + err.message, 'text-red');
+      break;
+    }
+
+    globalIndex += currentBatch.length;
+
+    if (i + batchSize < allRecipients.length && !state.job.stopped) {
+      await new Promise(r => setTimeout(r, batchDelay));
+    }
+  }
+
+  state.job.running = false;
+  if (!state.job.stopped) {
+    appendLog('> Transmission complete', 'text-green');
+  }
+  showSummary(state);
 }
 
 let _logLines = [];
 
-function connectSSE(state) {
-  const es = new EventSource('/api/progress');
-
-  es.addEventListener('start', e => {
-    const d = JSON.parse(e.data);
-    state.job.total = d.total;
-    appendLog('> Transmission started', 'text-green');
-  });
-
-  es.addEventListener('progress', e => {
-    const d = JSON.parse(e.data);
-    state.job.sent   = d.sent;
-    state.job.failed = d.failed;
-    state.job.results.push({ email: d.email, status: d.status, duration: d.duration, error: d.error });
-    updateProgress(d, state);
-    appendLog(`> ${d.status === 'sent' ? 'OK' : 'ERR'} - ${d.email} - ${d.status === 'sent' ? d.duration+'ms' : d.error}`, d.status === 'sent' ? 'text-primary' : 'text-red');
-  });
-
-  es.addEventListener('done', e => {
-    const d = JSON.parse(e.data);
-    es.close();
-    state.job.running = false;
-    appendLog('> Transmission complete', 'text-green');
-    showSummary(state);
-  });
-
-  es.addEventListener('stopped', () => {
-    es.close();
-    state.job.running = false;
-    appendLog('> Transmission aborted', 'text-amber');
-  });
-
-  es.addEventListener('error', () => {
-    if (es.readyState === EventSource.CLOSED) return;
-    toast('ERR: SSE CONNECTION LOST', 'warn');
-  });
-}
-
-let _speedSamples = [];
-let _lastTime = Date.now();
 let _startTime = Date.now();
 
 function resetProgress(state) {
-  _speedSamples = [];
-  _lastTime = Date.now();
   _startTime = Date.now();
   _logLines = [];
   document.getElementById('progress-label-text').textContent = `0 / ${state.job.total} sent`;
@@ -164,29 +174,28 @@ function resetProgress(state) {
   document.getElementById('log-output').innerHTML = '';
 }
 
-function updateProgress(d, state) {
-  const pct = (d.index + 1) / state.job.total;
+function updateProgress(currentIndex, state) {
+  const pct = (currentIndex + 1) / state.job.total;
   
   // Update UI Progress Bar
-  document.getElementById('progress-label-text').textContent = `${d.index + 1} / ${state.job.total} sent`;
+  document.getElementById('progress-label-text').textContent = `${currentIndex + 1} / ${state.job.total} sent`;
   document.getElementById('progress-fill').style.width = Math.round(pct * 100) + '%';
   document.getElementById('progress-pct').textContent = Math.round(pct * 100) + '%';
   
-  document.getElementById('stat-sent').textContent    = d.sent;
-  document.getElementById('stat-remaining').textContent = state.job.total - d.index - 1;
-  document.getElementById('stat-failed').textContent  = d.failed;
+  document.getElementById('stat-sent').textContent    = state.job.sent;
+  document.getElementById('stat-remaining').textContent = state.job.total - currentIndex - 1;
+  document.getElementById('stat-failed').textContent  = state.job.failed;
   
   // Speed / ETA
   const now = Date.now();
-  const elapsed = (now - _lastTime) / 1000;
-  _lastTime = now;
-  if (elapsed > 0) _speedSamples.push(1 / elapsed);
-  if (_speedSamples.length > 10) _speedSamples.shift();
-  const avgSpeed = _speedSamples.reduce((a, b) => a + b, 0) / _speedSamples.length;
-  const remaining = state.job.total - d.index - 1;
+  const elapsedTotal = (now - _startTime) / 1000;
+  const completed = currentIndex + 1;
+  
+  const avgSpeed = elapsedTotal > 0 ? (completed / elapsedTotal) : 0;
+  const remaining = state.job.total - completed;
   const etaSec = avgSpeed > 0 ? Math.round(remaining / avgSpeed) : 0;
 
-  document.getElementById('progress-speed').textContent = `~${avgSpeed.toFixed(1)}/s`;
+  document.getElementById('progress-speed').textContent = avgSpeed > 0 ? `~${avgSpeed.toFixed(1)}/s` : '—';
   document.getElementById('progress-eta').textContent = etaSec > 0 ? formatTime(etaSec) : '—';
 }
 

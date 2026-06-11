@@ -128,8 +128,11 @@
             </div>
 
             <div class="form-col-6 form-group">
-              <label for="smtp-pass">Password</label>
+              <label for="smtp-pass">App Password <span style="color:var(--danger);font-size:var(--t-xs);font-weight:normal;margin-left:4px;">(NOT your standard password)</span></label>
               <input type="password" id="smtp-pass" placeholder="App password" autocomplete="new-password" />
+              <span class="form-hint" style="margin-top:2px;">
+                <a href="#" onclick="document.getElementById('help-dialog').showModal(); document.querySelector('[data-help-tab=\'smtp-guide\']').click(); return false;" style="color:var(--primary);text-decoration:underline;">Click here to know what an app password is.</a>
+              </span>
             </div>
 
             <div class="form-col-12 form-group">
@@ -234,11 +237,15 @@
               <div class="drop-zone-hint">or click to browse — .csv, .txt</div>
             </div>
             <div id="csv-mapping" class="hidden mt-4">
-              <div class="form-grid">
-                <label>Email Column</label>
-                <select id="csv-email-col"></select>
-                <label>Name Column</label>
-                <select id="csv-name-col"><option value="">— none —</option></select>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>Email Column</label>
+                  <select id="csv-email-col"></select>
+                </div>
+                <div class="form-group">
+                  <label>Name Column</label>
+                  <select id="csv-name-col"><option value="">— none —</option></select>
+                </div>
               </div>
               <button class="btn btn-primary w-100 mt-4" id="btn-apply-csv">Load from CSV</button>
             </div>
@@ -256,11 +263,15 @@
               <label>Sheet</label>
               <select id="excel-sheet"></select>
             </div>
-            <div id="excel-mapping" class="hidden mt-3 form-grid">
-              <label>Email Column</label>
-              <select id="excel-email-col"></select>
-              <label>Name Column</label>
-              <select id="excel-name-col"><option value="">— none —</option></select>
+            <div id="excel-mapping" class="hidden mt-3 form-grid-2">
+              <div class="form-group">
+                <label>Email Column</label>
+                <select id="excel-email-col"></select>
+              </div>
+              <div class="form-group">
+                <label>Name Column</label>
+                <select id="excel-name-col"><option value="">— none —</option></select>
+              </div>
             </div>
             <button class="btn btn-primary w-100 mt-4 hidden" id="btn-apply-excel">Load from Excel</button>
           </div>
@@ -282,9 +293,9 @@
 
         <!-- Right: Preview list -->
         <div class="card flex-col" style="min-height:400px;">
-          <div class="card-header flex-row items-center justify-between" style="flex-direction:row;display:flex;align-items:center;justify-content:space-between;">
+          <div class="card-header flex-row items-center justify-between" style="flex-direction:row;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
             <p class="card-title" style="margin:0">Recipients (<span id="recipient-count">0</span>)</p>
-            <div class="search-input-wrap" style="width:200px;">
+            <div class="search-input-wrap" style="width:100%;max-width:200px;">
               <span class="search-icon">🔍</span>
               <input type="text" id="recipient-search" placeholder="Search…" style="padding-left:32px;height:34px;font-size:13px;" />
             </div>
@@ -512,7 +523,7 @@
           </div>
         </div>
 
-        <div class="form-grid mb-6" style="grid-template-columns:1fr 1fr;gap:var(--space-4);">
+        <div class="form-grid-2 mb-6">
           <div class="form-group">
             <label class="form-label" for="batch-size">Batch Size</label>
             <input type="number" id="batch-size" value="10" min="1" max="100" />

@@ -105,8 +105,7 @@ export function initWizard(state) {
   function validateStep(step, state) {
     if (step === 1) {
       if (!state.smtpOk) {
-        toast('ERR: SMTP CONNECTION REQUIRED', 'error');
-        return false;
+        toast('WARN: SMTP connection not verified. Sending might fail.', 'warning');
       }
       return true;
     }
