@@ -1,0 +1,92 @@
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@keyframes pulse-ring-warning {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition-normal) forwards;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.status-badge::before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-badge.offline {
+  color: var(--text-secondary);
+}
+.status-badge.offline::before { background: var(--text-muted); }
+
+.status-badge.online {
+  color: var(--success);
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.1);
+}
+.status-badge.online::before { 
+  background: var(--success); 
+  animation: pulse-ring 2s infinite;
+}
+
+.status-badge.testing {
+  color: var(--warning);
+  border-color: rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.1);
+}
+.status-badge.testing::before {
+  background: var(--warning);
+  animation: pulse-ring-warning 1.5s infinite;
+}
+
+/* Progress Track */
+.progress-track {
+  background: var(--border);
+  border-radius: var(--radius-full);
+  height: 8px;
+  width: 100%;
+  overflow: hidden;
+}
+.progress-fill {
+  background: linear-gradient(90deg, var(--primary), #818cf8);
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  margin-bottom: 8px;
+}

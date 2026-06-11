@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BulkMailer — Professional Email Campaigns</title>
+  <meta name="description" content="BulkMailer is a professional bulk email platform for sending campaigns with full SMTP control." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z%22/><path d=%22m22 6-10 7L2 6%22/></svg>">
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/motion.css" />
+</head>
+<body>
+<div id="drawer-backdrop" class="drawer-backdrop"></div>
+<div id="mobile-drawer" class="drawer">
+  <div class="drawer-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <span class="nav-logo">BulkMailer</span>
+    <button id="close-drawer-btn" class="btn btn-ghost" style="padding: 4px 8px; font-size: 1.2rem;">✕</button>
+  </div>
+  <div class="drawer-content flex-col gap-4" style="margin-top: 24px;">
+    <button class="btn btn-secondary w-100" onclick="document.getElementById('help-dialog').showModal(); document.getElementById('close-drawer-btn').click();">Privacy & Guide</button>
+    <a href="https://github.com/asmit260/mailblast" class="btn btn-ghost w-100" target="_blank">Source Code</a>
+    <a href="https://github.com/asmit260/mailblast" class="btn btn-ghost w-100" target="_blank">GitHub</a>
+    <a href="mailto:asmitrawat531@gmail.com" class="btn btn-ghost w-100">Email Me</a>
+  </div>
+</div>
+<div id="app">
+
+  <!-- ═══ TOP NAVIGATION ═══ -->
+  <header id="top-nav">
+    <div class="nav-left">
+      <button id="mobile-menu-btn" class="btn btn-ghost btn-sm hidden-desktop" style="font-size: 1.2rem; padding: 4px 8px; margin-right: 8px;">☰</button>
+      <span class="nav-logo">BulkMailer</span>
+      <div class="nav-divider"></div>
+      <span class="nav-product">Ink v3</span>
+      <div class="nav-divider"></div>
+      <button class="btn btn-ghost btn-sm" id="btn-show-help" style="font-size: var(--t-xs); height: 26px; padding: 0 8px; border: 1px solid var(--border); border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">Privacy & Guide</button>
+      <div class="nav-divider"></div>
+      <a id="link-source" href="https://github.com/asmit260/mailblast" target="_blank" style="font-size: var(--t-xs); color: var(--text-secondary); text-decoration: none; padding: 0 8px; display: flex; align-items: center;">Source Code</a>
+      <a id="link-github" href="https://github.com/asmit260/mailblast" target="_blank" style="font-size: var(--t-xs); color: var(--text-secondary); text-decoration: none; padding: 0 8px; display: flex; align-items: center;">GitHub</a>
+      <a id="link-gmail" href="mailto:asmitrawat531@gmail.com" target="_blank" style="font-size: var(--t-xs); color: var(--text-secondary); text-decoration: none; padding: 0 8px; display: flex; align-items: center;">Email Me</a>
+    </div>
+
+    <div class="nav-center">
+      <span class="nav-campaign-name" id="nav-campaign-name">Untitled Campaign</span>
+    </div>
+
+    <div class="nav-right">
+      <span class="nav-save-status" id="nav-save-status">Draft</span>
+      <div class="nav-smtp-status">
+        <div class="smtp-dot" id="nav-smtp-dot"></div>
+        <span id="nav-smtp-label">SMTP Offline</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ WORKFLOW NAVIGATION ═══ -->
+  <nav id="workflow-nav" aria-label="Campaign workflow steps">
+    <button class="workflow-step active" data-step="1" id="wf-step-1">
+      <span class="workflow-step-number">01</span>
+      Setup
+    </button>
+    <span class="workflow-sep">›</span>
+    <button class="workflow-step" data-step="2" id="wf-step-2">
+      <span class="workflow-step-number">02</span>
+      Audience
+    </button>
+    <span class="workflow-sep">›</span>
+    <button class="workflow-step" data-step="3" id="wf-step-3">
+      <span class="workflow-step-number">03</span>
+      Compose
+    </button>
+    <span class="workflow-sep">›</span>
+    <button class="workflow-step" data-step="4" id="wf-step-4">
+      <span class="workflow-step-number">04</span>
+      Review
+    </button>
+    <span class="workflow-sep">›</span>
+    <button class="workflow-step" data-step="5" id="wf-step-5">
+      <span class="workflow-step-number">05</span>
+      Send
+    </button>
+  </nav>
+
+  <!-- ═══ MAIN WORKSPACE ═══ -->
+  <main id="main" role="main">
+
+    <!-- ═══ STEP 1: SETUP (SMTP) ═══ -->
+    <section class="wizard-step active" id="step-1">
+      <div class="section-header">
+        <h1 class="section-title">SMTP Configuration</h1>
+        <p class="section-subtitle">Connect your outbound mail server to start sending.</p>
+      </div>
+
+      <div class="split-layout">
+        <!-- Left: Config form -->
+        <div class="card" id="smtp-section">
+          <div class="card-header">
+            <p class="card-title">Server Settings</p>
+            <p class="card-desc">Choose a preset or enter custom SMTP credentials.</p>
+          </div>
+
+          <div class="form-group mb-4">
+            <label class="form-label">Quick Preset</label>
+            <div class="preset-row">
+              <button class="preset-btn active" id="preset-gmail" data-preset="gmail">Gmail</button>
+              <button class="preset-btn" id="preset-outlook" data-preset="outlook">Outlook</button>
+              <button class="preset-btn" id="preset-yahoo" data-preset="yahoo">Yahoo</button>
+              <button class="preset-btn" id="preset-custom" data-preset="custom">Custom</button>
+            </div>
+          </div>
+
+          <div class="form-grid-stacked">
+            <div class="form-col-8 form-group">
+              <label for="smtp-host">Host</label>
+              <input type="text" id="smtp-host" placeholder="smtp.gmail.com" />
+            </div>
+
+            <div class="form-col-4 form-group">
+              <label for="smtp-port">Port</label>
+              <input type="number" id="smtp-port" placeholder="587" />
+            </div>
+
+            <div class="form-col-6 form-group">
+              <label for="smtp-user">Username</label>
+              <input type="email" id="smtp-user" placeholder="asmitrawat531@gmail.com" />
+            </div>
+
+            <div class="form-col-6 form-group">
+              <label for="smtp-pass">Password</label>
+              <input type="password" id="smtp-pass" placeholder="App password" autocomplete="new-password" />
+            </div>
+
+            <div class="form-col-12 form-group">
+              <label>Encryption</label>
+              <div class="toggle-wrapper" style="margin-top:2px;">
+                <label class="ink-toggle" title="Enable TLS/SSL">
+                  <input type="checkbox" id="smtp-secure" />
+                  <div class="ink-toggle-track"></div>
+                  <div class="ink-toggle-thumb"></div>
+                </label>
+                <span id="tls-label" class="text-sm text-secondary-c">STARTTLS (port 587)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <button class="btn btn-primary w-100" id="btn-test-smtp">Test Connection</button>
+            <span class="form-hint text-center" style="display:block;margin-top:8px;">Sends a secure test email to yourself to confirm the server credentials are 100% correct.</span>
+          </div>
+        </div>
+
+        <!-- Right: Connection status -->
+        <div class="card flex-col gap-4">
+          <div class="card-header">
+            <p class="card-title">Connection Status</p>
+            <p class="card-desc">Verify your SMTP server is reachable.</p>
+          </div>
+
+          <div class="status-panel">
+            <div class="status-row">
+              <span class="status-row-label">Status</span>
+              <span id="smtp-status-badge" class="status-badge offline">Offline</span>
+            </div>
+            <div class="status-row">
+              <span class="status-row-label">Provider</span>
+              <span class="status-row-value" id="smtp-provider-val">—</span>
+            </div>
+            <div class="status-row">
+              <span class="status-row-label">Encryption</span>
+              <span class="status-row-value" id="smtp-enc-val">—</span>
+            </div>
+            <div class="status-row">
+              <span class="status-row-label">Last Verified</span>
+              <span class="status-row-value" id="smtp-verified-val">—</span>
+            </div>
+          </div>
+
+          <div class="activity-log flex-1" id="smtp-terminal-log">
+            <p class="log-line">Waiting for connection test…</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ STEP 2: AUDIENCE ═══ -->
+    <section class="wizard-step" id="step-2">
+      <div class="section-header">
+        <h1 class="section-title">Audience</h1>
+        <p class="section-subtitle">Import and validate your recipient list.</p>
+      </div>
+
+      <!-- Stats row -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="recipient-count">0</div>
+          <div class="stat-label">Total Recipients</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value text-success" id="recipient-valid-count">0</div>
+          <div class="stat-label">Valid</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value text-danger" id="recipient-invalid-count">0</div>
+          <div class="stat-label">Invalid</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value text-mono" id="recipient-est-time">—</div>
+          <div class="stat-label">Est. Send Time</div>
+        </div>
+      </div>
+
+      <div class="split-layout">
+        <!-- Left: Import -->
+        <div class="card">
+          <div class="card-header">
+            <p class="card-title">Import Recipients</p>
+            <p class="card-desc" style="margin-top:4px;">Upload a CSV, Excel sheet, or Manually Add recipients. Columns are auto-mapped to <code>email</code>, <code>name</code>, and <code>company</code>.</p>
+          </div>
+
+          <div class="tabs mb-4" role="tablist">
+            <button class="tab-btn active" role="tab" data-tab="csv" id="tab-csv">CSV</button>
+            <button class="tab-btn" role="tab" data-tab="excel" id="tab-excel">Excel</button>
+            <button class="tab-btn" role="tab" data-tab="paste" id="tab-paste">Manually Add</button>
+          </div>
+
+          <!-- CSV -->
+          <div class="tab-pane active" id="pane-csv">
+            <div class="drop-zone" id="csv-drop-zone">
+              <input type="file" accept=".csv,.txt" id="csv-file-input" />
+              <span class="drop-zone-icon" style="font-size: var(--t-xs); font-family: var(--font-mono); color: var(--text-secondary); border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">CSV / TXT</span>
+              <div class="drop-zone-title">Drop CSV file here</div>
+              <div class="drop-zone-hint">or click to browse — .csv, .txt</div>
+            </div>
+            <div id="csv-mapping" class="hidden mt-4">
+              <div class="form-grid">
+                <label>Email Column</label>
+                <select id="csv-email-col"></select>
+                <label>Name Column</label>
+                <select id="csv-name-col"><option value="">— none —</option></select>
+              </div>
+              <button class="btn btn-primary w-100 mt-4" id="btn-apply-csv">Load from CSV</button>
+            </div>
+          </div>
+
+          <!-- Excel -->
+          <div class="tab-pane" id="pane-excel">
+            <div class="drop-zone" id="excel-drop-zone">
+              <input type="file" accept=".xlsx,.xls" id="excel-file-input" />
+              <span class="drop-zone-icon" style="font-size: var(--t-xs); font-family: var(--font-mono); color: var(--text-secondary); border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">XLSX / XLS</span>
+              <div class="drop-zone-title">Drop Excel file here</div>
+              <div class="drop-zone-hint">or click to browse — .xlsx, .xls</div>
+            </div>
+            <div id="excel-sheet-select" class="hidden mt-4 form-grid">
+              <label>Sheet</label>
+              <select id="excel-sheet"></select>
+            </div>
+            <div id="excel-mapping" class="hidden mt-3 form-grid">
+              <label>Email Column</label>
+              <select id="excel-email-col"></select>
+              <label>Name Column</label>
+              <select id="excel-name-col"><option value="">— none —</option></select>
+            </div>
+            <button class="btn btn-primary w-100 mt-4 hidden" id="btn-apply-excel">Load from Excel</button>
+          </div>
+
+          <!-- Paste -->
+          <div class="tab-pane" id="pane-paste">
+            <div class="form-group">
+              <label class="form-label">Manually Add Recipients</label>
+              <textarea id="paste-input" rows="8" placeholder="asmitrawat531@gmail.com, Asmit, MailBlast&#10;example@gmail.com, User, Company&#10;format: email, name, company (one per line)"></textarea>
+              <span class="form-hint">Write one recipient per line in the format: <strong>email, name, company</strong>. You can then use the tags <code>{{name}}</code> and <code>{{company}}</code> directly in your email editor!</span>
+            </div>
+            <button class="btn btn-primary w-100 mt-4" id="btn-load-paste">Add Recipients</button>
+          </div>
+
+          <div class="mt-6 text-right">
+            <button class="btn btn-danger btn-sm" id="btn-clear-recipients">Clear All</button>
+          </div>
+        </div>
+
+        <!-- Right: Preview list -->
+        <div class="card flex-col" style="min-height:400px;">
+          <div class="card-header flex-row items-center justify-between" style="flex-direction:row;display:flex;align-items:center;justify-content:space-between;">
+            <p class="card-title" style="margin:0">Recipients (<span id="recipient-count">0</span>)</p>
+            <div class="search-input-wrap" style="width:200px;">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="recipient-search" placeholder="Search…" style="padding-left:32px;height:34px;font-size:13px;" />
+            </div>
+          </div>
+          <div class="recipient-list flex-1" id="recipient-list">
+            <div class="empty-state">
+              <span class="empty-state-icon">📭</span>
+              <span class="empty-state-text">No recipients imported</span>
+              <span class="empty-state-hint">Upload a CSV or paste email addresses</span>
+            </div>
+          </div>
+          <!-- Pagination Panel -->
+          <div class="flex-row items-center justify-between mt-3" id="recipient-pagination" style="display: none; padding-top: var(--space-2); border-top: 1px solid var(--border); flex-shrink: 0;">
+            <button class="btn btn-secondary btn-sm" id="btn-page-prev">← Prev</button>
+            <span class="text-xs text-secondary-c font-medium" id="page-indicator">Page 1 of 1</span>
+            <button class="btn btn-secondary btn-sm" id="btn-page-next">Next →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ STEP 3: COMPOSE ═══ -->
+    <section class="wizard-step" id="step-3">
+      <div class="section-header">
+        <h1 class="section-title">Compose</h1>
+        <p class="section-subtitle">Write your email content.</p>
+      </div>
+
+      <!-- Personalization Guide Banner -->
+      <div class="card mb-4" style="background: var(--bg-secondary); border-color: var(--border-strong);">
+        <p class="card-title" style="font-size: var(--t-sm); display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <strong>Personalization & Dynamic Tags Guide</strong>
+        </p>
+        <p class="card-desc" style="line-height: 1.5; color: var(--text-secondary);">
+          You can inject dynamic recipient fields directly into your <strong>Subject</strong>, <strong>Preview Text</strong>, or <strong>Email Message Body</strong>. The server automatically replaces these placeholders for each individual recipient!
+        </p>
+        <div style="display: flex; gap: var(--space-3); margin-top: 12px; flex-wrap: wrap;">
+          <span style="font-size: var(--t-xs); font-family: var(--font-mono); background: var(--surface); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-primary);">{{email}} - Recipient's Email</span>
+          <span style="font-size: var(--t-xs); font-family: var(--font-mono); background: var(--surface); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-primary);">{{name}} - Full Name</span>
+          <span style="font-size: var(--t-xs); font-family: var(--font-mono); background: var(--surface); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-primary);">{{company}} - Company Name</span>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <p class="card-title">Envelope</p>
+        </div>
+        <div class="form-grid-stacked">
+          <div class="form-col-12 form-group">
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" placeholder="Your compelling subject line…" class="w-100" />
+            <div class="char-counter" id="subject-counter">0 / 80</div>
+          </div>
+
+          <div class="form-col-12 form-group">
+            <label for="preview-text">Preview Text</label>
+            <input type="text" id="preview-text" placeholder="Short preview shown in inbox…" />
+          </div>
+
+          <div class="form-col-4 form-group">
+            <label for="from-name">From Name</label>
+            <input type="text" id="from-name" placeholder="Asmit" />
+          </div>
+
+          <div class="form-col-4 form-group">
+            <label for="from-email">From Email</label>
+            <input type="email" id="from-email" placeholder="asmitrawat531@gmail.com" />
+          </div>
+
+          <div class="form-col-4 form-group">
+            <label for="reply-to">Reply-To</label>
+            <input type="email" id="reply-to" placeholder="Optional reply address" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card flex-col flex-1">
+        <div class="card-header">
+          <p class="card-title">Message Editor</p>
+        </div>
+
+        <div class="tabs mb-4" role="tablist">
+          <button class="tab-btn active" role="tab" data-compose-tab="text" id="ctab-text">Plain Text</button>
+          <button class="tab-btn" role="tab" data-compose-tab="rich" id="ctab-rich">Design</button>
+          <button class="tab-btn" role="tab" data-compose-tab="html" id="ctab-html">HTML</button>
+        </div>
+
+        <div id="editor-text" class="flex-1 flex-col">
+          <textarea id="body-text" class="flex-1 w-100" placeholder="Hello {{name}},&#10;&#10;Your message here…"></textarea>
+        </div>
+        <div id="editor-rich" class="hidden flex-1 flex-col">
+          <div id="quill-editor" class="flex-1 w-100"></div>
+        </div>
+        <div id="editor-html" class="hidden flex-1 flex-col">
+          <textarea id="html-source" class="flex-1 w-100 text-mono" spellcheck="false" placeholder="&lt;p&gt;Hello {{name}}&lt;/p&gt;"></textarea>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-header">
+          <p class="card-title">Attachments</p>
+          <p class="card-desc">Add files to attach to every email.</p>
+        </div>
+        <div class="drop-zone" id="attach-drop-zone" style="padding:var(--space-6);">
+          <input type="file" multiple id="attach-file-input" />
+          <span class="drop-zone-icon" style="font-size: var(--t-xs); font-family: var(--font-mono); color: var(--text-secondary); border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">FILES</span>
+          <div class="drop-zone-title">Drop files here</div>
+          <div class="drop-zone-hint">PDF, images, documents</div>
+        </div>
+        <div class="attachment-list hidden" id="attachment-list"></div>
+      </div>
+    </section>
+
+    <!-- ═══ STEP 4: REVIEW ═══ -->
+    <section class="wizard-step" id="step-4">
+      <div class="section-header">
+        <h1 class="section-title">Review</h1>
+        <p class="section-subtitle">Verify everything before sending.</p>
+      </div>
+
+      <div id="review-warnings"></div>
+
+      <div class="split-layout">
+        <div>
+          <div class="review-section">
+            <div class="review-section-title">Campaign</div>
+            <div class="review-row">
+              <span class="review-key">Subject</span>
+              <span class="review-val" id="rv-subject">—</span>
+            </div>
+            <div class="review-row">
+              <span class="review-key">Preview Text</span>
+              <span class="review-val" id="rv-preview">—</span>
+            </div>
+            <div class="review-row">
+              <span class="review-key">From</span>
+              <span class="review-val" id="rv-from">—</span>
+            </div>
+          </div>
+
+          <div class="review-section">
+            <div class="review-section-title">Audience</div>
+            <div class="review-row">
+              <span class="review-key">Total Recipients</span>
+              <span class="review-val" id="rv-total">0</span>
+            </div>
+            <div class="review-row">
+              <span class="review-key">Valid</span>
+              <span class="review-val text-success" id="rv-valid">0</span>
+            </div>
+            <div class="review-row">
+              <span class="review-key">Invalid (skipped)</span>
+              <span class="review-val text-danger" id="rv-invalid">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="review-section">
+            <div class="review-section-title">SMTP</div>
+            <div class="review-row">
+              <span class="review-key">Provider</span>
+              <span class="review-val" id="rv-provider">—</span>
+            </div>
+            <div class="review-row">
+              <span class="review-key">Status</span>
+              <span class="review-val" id="rv-smtp-status">—</span>
+            </div>
+            <div class="review-row">
+              <span class="review-key">Encryption</span>
+              <span class="review-val" id="rv-encryption">—</span>
+            </div>
+          </div>
+
+          <div class="review-section">
+            <div class="review-section-title">Delivery Estimate</div>
+            <div class="review-row">
+              <span class="review-key">Attachments</span>
+              <span class="review-val" id="rv-attachments">0 files</span>
+            </div>
+            <div class="review-row">
+              <span class="review-key">Batch Size</span>
+              <span class="review-val" id="rv-batch">10 / batch</span>
+            </div>
+            <div class="review-row">
+              <span class="review-key">Est. Duration</span>
+              <span class="review-val" id="rv-duration">—</span>
+            </div>
+          </div>
+
+          <div class="card mt-4" style="padding:var(--space-4);">
+            <p class="card-title mb-3">Email Preview</p>
+            <iframe id="preview-frame" title="Email preview" sandbox="allow-same-origin allow-scripts"
+              style="width:100%;min-height:300px;border:1px solid var(--border);border-radius:6px;background:#fff;"></iframe>
+            <button class="btn btn-secondary w-100 mt-3" id="btn-preview-email">Send Test Email to Myself</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ STEP 5: SEND ═══ -->
+    <section class="wizard-step items-center justify-center" id="step-5" style="min-height:400px;">
+
+      <!-- Launch screen -->
+      <div class="send-ready-box" id="launch-screen">
+        <h1 class="section-title text-center" style="font-size:var(--t-2xl);">Campaign Ready</h1>
+        <p class="section-subtitle text-center">Review the summary, then launch your campaign.</p>
+
+        <div class="send-stats-list">
+          <div class="send-stat-row">
+            <span class="send-stat-key">Recipients</span>
+            <span class="send-stat-val" id="ls-recipients">0</span>
+          </div>
+          <div class="send-stat-row">
+            <span class="send-stat-key">Attachments</span>
+            <span class="send-stat-val" id="ls-attachments">0</span>
+          </div>
+          <div class="send-stat-row">
+            <span class="send-stat-key">SMTP Status</span>
+            <span class="send-stat-val text-success" id="ls-smtp">Verified</span>
+          </div>
+          <div class="send-stat-row">
+            <span class="send-stat-key">Est. Duration</span>
+            <span class="send-stat-val" id="ls-duration">—</span>
+          </div>
+        </div>
+
+        <div class="form-grid mb-6" style="grid-template-columns:1fr 1fr;gap:var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="batch-size">Batch Size</label>
+            <input type="number" id="batch-size" value="10" min="1" max="100" />
+            <span class="form-hint">Emails per batch</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="batch-delay">Delay (ms)</label>
+            <input type="number" id="batch-delay" value="1000" min="0" />
+            <span class="form-hint">Wait between batches</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary w-100" id="btn-initiate-transmission" style="height:52px;font-size:var(--t-md);">
+          Send Campaign
+        </button>
+        <button class="btn btn-ghost w-100 mt-3" id="btn-save-draft">Save Draft</button>
+      </div>
+
+      <!-- Sending screen -->
+      <div class="hidden w-100" id="sending-screen" style="max-width:700px;">
+        <div class="section-header text-center">
+          <h1 class="section-title">Sending…</h1>
+        </div>
+
+        <div class="stats-grid mb-6">
+          <div class="stat-card">
+            <div class="stat-value text-success" id="stat-sent">0</div>
+            <div class="stat-label">Delivered</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-remaining">0</div>
+            <div class="stat-label">Remaining</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value text-danger" id="stat-failed">0</div>
+            <div class="stat-label">Failed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="progress-speed">—</div>
+            <div class="stat-label">Rate</div>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="progress-label">
+            <span id="progress-label-text">0 / 0 sent</span>
+            <span id="progress-pct">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+          </div>
+          <div class="mt-2 text-xs text-muted-c">ETA: <span id="progress-eta">calculating…</span></div>
+        </div>
+
+        <div class="card">
+          <details open>
+            <summary style="cursor:pointer;font-size:var(--t-sm);font-weight:500;color:var(--text-secondary);margin-bottom:var(--space-3);">
+              Activity Log
+            </summary>
+            <div class="activity-log" id="log-panel">
+              <div id="log-output"></div>
+            </div>
+          </details>
+        </div>
+
+        <div class="flex-row gap-3 mt-4 justify-center">
+          <button class="btn btn-secondary" id="btn-pause">Pause</button>
+          <button class="btn btn-danger" id="btn-stop">Abort</button>
+        </div>
+      </div>
+
+      <!-- Success screen -->
+      <div class="hidden" id="success-screen" style="max-width:520px;width:100%;text-align:center;">
+        <div class="section-title" style="font-size:var(--t-2xl);margin-bottom:var(--space-2);">Campaign Sent</div>
+        <p class="section-subtitle mb-6">Your emails have been delivered successfully.</p>
+
+        <div class="stats-grid mb-6">
+          <div class="stat-card">
+            <div class="stat-value text-success" id="final-sent">0</div>
+            <div class="stat-label">Delivered</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value text-danger" id="final-failed">0</div>
+            <div class="stat-label">Failed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="final-rate">—</div>
+            <div class="stat-label">Success Rate</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="final-duration">—</div>
+            <div class="stat-label">Duration</div>
+          </div>
+        </div>
+
+        <div class="flex-col gap-3">
+          <button class="btn btn-primary w-100" id="btn-download-report">Export Report</button>
+          <div id="summary-failed-section" class="hidden">
+            <button class="btn btn-danger w-100" id="btn-retry-failed">Retry Failed</button>
+          </div>
+          <button class="btn btn-ghost w-100" id="btn-new-campaign">Create New Campaign</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══ WIZARD FOOTER ═══ -->
+  <footer id="wizard-footer">
+    <button class="btn btn-secondary" id="wiz-back" style="visibility:hidden;">← Back</button>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" id="wiz-next">Continue →</button>
+    <button class="btn btn-primary hidden" id="btn-send-prepare">Prepare to Send →</button>
+  </footer>
+</div>
+
+<!-- Native Help & Privacy Dialog Modal -->
+<dialog id="help-dialog" style="border: 1px solid var(--border-strong); border-radius: 12px; max-width: 680px; width: calc(100% - 32px); padding: 0; box-shadow: var(--shadow-card); background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-body); overflow: hidden;">
+  <!-- Header -->
+  <div style="padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg-secondary);">
+    <div>
+      <h2 style="margin: 0; font-size: var(--t-md); font-weight: 600; color: var(--text-primary);">Safety, Privacy & Credentials Guide</h2>
+      <p style="margin: 4px 0 0; font-size: var(--t-xs); color: var(--text-muted);">Understand how BulkMailer operates locally and securely.</p>
+    </div>
+    <button id="btn-close-help" class="btn btn-ghost btn-sm" style="height: 30px; width: 30px; padding: 0; border-radius: 50%; border: 1px solid var(--border); cursor: pointer;">✕</button>
+  </div>
+
+  <!-- Tabs Nav -->
+  <div class="tabs" role="tablist" style="border-bottom: 1px solid var(--border); border-radius: 0; padding: 8px var(--space-6) 0; background: var(--bg-secondary); display: flex; gap: 4px;">
+    <button class="tab-btn active" data-help-tab="safety" style="padding: 10px 16px; font-size: var(--t-sm); cursor: pointer; border: none; background: transparent;">Why It's Safe</button>
+    <button class="tab-btn" data-help-tab="works" style="padding: 10px 16px; font-size: var(--t-sm); cursor: pointer; border: none; background: transparent;">How It Works</button>
+    <button class="tab-btn" data-help-tab="smtp-guide" style="padding: 10px 16px; font-size: var(--t-sm); cursor: pointer; border: none; background: transparent;">Get SMTP Credentials</button>
+  </div>
+
+  <!-- Scrollable Contents -->
+  <div style="padding: var(--space-6); max-height: 400px; overflow-y: auto;">
+    
+    <!-- Tab: Safety -->
+    <div id="help-pane-safety" class="help-pane" style="display: block;">
+      <h3 style="font-size: var(--t-sm); font-weight: 600; margin: 0 0 12px; color: var(--color-success);">100% Local Data Sovereignty</h3>
+      <p style="font-size: var(--t-sm); line-height: 1.6; margin-bottom: 16px; color: var(--text-secondary);">
+        Unlike commercial online email platforms (which store your customer lists, campaign copy, and server details on third-party cloud servers), <strong>BulkMailer runs fully locally on your physical machine</strong>.
+      </p>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: 16px;">
+        <div style="background: var(--bg-secondary); border: 1px solid var(--border); padding: 16px; border-radius: 8px;">
+          <h4 style="margin: 0 0 6px; font-size: var(--t-sm); font-weight: 600; color: var(--text-primary);">No External Analytics</h4>
+          <p style="margin: 0; font-size: var(--t-xs); line-height: 1.5; color: var(--text-secondary);">Your API keys, lists, and SMTP passwords are never transmitted to any central database or telemetry tracker. Everything resides strictly in your RAM and disk.</p>
+        </div>
+        <div style="background: var(--bg-secondary); border: 1px solid var(--border); padding: 16px; border-radius: 8px;">
+          <h4 style="margin: 0 0 6px; font-size: var(--t-sm); font-weight: 600; color: var(--text-primary);">Direct Outbound TLS</h4>
+          <p style="margin: 0; font-size: var(--t-xs); line-height: 1.5; color: var(--text-secondary);">Connections travel directly from your server.js instance straight to your SMTP server (e.g. Google or Microsoft) via secure, encrypted TLS protocols.</p>
+        </div>
+      </div>
+
+      <div style="background: #F4FBF6; border: 1px solid #C2F0D0; color: #165B2D; padding: 12px 16px; border-radius: 8px; font-size: var(--t-xs); line-height: 1.6;">
+        <strong>Terms of Use & Data Safety Agreement:</strong> By using BulkMailer, you confirm you are sending transactional mailings or authorized promotional newsletters to opt-in subscribers only. BulkMailer enforces full compliance with CAN-SPAM and GDPR regulations by mandating local opting, custom unsubscribe headers, and direct sender verification.
+      </div>
+    </div>
+
+    <!-- Tab: How It Works -->
+    <div id="help-pane-works" class="help-pane" style="display: none;">
+      <h3 style="font-size: var(--t-sm); font-weight: 600; margin: 0 0 12px; color: var(--text-primary);">Under the Hood: Transmission Lifecycle</h3>
+      <p style="font-size: var(--t-sm); line-height: 1.6; margin-bottom: 16px; color: var(--text-secondary);">
+        Here is exactly what happens when you click <strong>"Send Campaign"</strong>:
+      </p>
+
+      <ol style="font-size: var(--t-sm); line-height: 1.7; padding-left: 20px; color: var(--text-secondary); margin-bottom: 16px;">
+        <li><strong>Payload Packaging</strong>: The frontend bundles recipient addresses, personalizations, attachments, and server configs into a secure <code>multipart/form-data</code> stream sent to your local backend at port 3000.</li>
+        <li><strong>SMTP Handshake Pooling</strong>: The Node.js engine initiates an optimized pool (5 parallel workers max). It logs into your host and opens active secure channels.</li>
+        <li><strong>Dynamic Template Interpolation</strong>: For every individual contact, the engine reconstructs the Subject, Plain-text fallback, and HTML content, matching custom attributes (like <code>{{name}}</code> and <code>{{company}}</code>) in real-time.</li>
+        <li><strong>Spam Prevention Guard</strong>: The server injects <code>List-Unsubscribe</code>, <code>Precedence: bulk</code>, and dynamic <code>X-Mailer</code> headers, protecting your sender status.</li>
+        <li><strong>Batch-Throttle Controls</strong>: Transmissions are strictly grouped (e.g., 10 emails at a time) with brief rest intervals (e.g. 1000ms delay) to guarantee your outbound IP doesn't trigger SMTP host speed restrictions.</li>
+      </ol>
+    </div>
+
+    <!-- Tab: SMTP Guide -->
+    <div id="help-pane-smtp-guide" class="help-pane" style="display: none;">
+      <h3 style="font-size: var(--t-sm); font-weight: 600; margin: 0 0 12px; color: var(--text-primary);">How to Retrieve Outbound SMTP Credentials</h3>
+      
+      <!-- Gmail Guide -->
+      <details open style="margin-bottom: 12px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--bg-primary);">
+        <summary style="cursor:pointer; background: var(--bg-secondary); padding: 10px 16px; font-size: var(--t-sm); font-weight: 600; color: var(--text-primary);">Google Gmail (App Passwords)</summary>
+        <div style="padding: 16px; font-size: var(--t-xs); line-height: 1.6; border-top: 1px solid var(--border); background: var(--surface);">
+          <p style="margin-top: 0; color: var(--text-secondary);">Gmail strictly forbids logging in with your main password for bulk apps. You must generate an <strong>App Password</strong>:</p>
+          <ol style="margin-bottom: 0; padding-left: 20px; color: var(--text-secondary);">
+            <li>Go to your <a href="https://myaccount.google.com" target="_blank" style="color:var(--color-info); text-decoration: underline;">Google Account Settings</a>.</li>
+            <li>In the search bar, type <strong>"App passwords"</strong> (Ensure 2-Step Verification is active on your account first).</li>
+            <li>Click "App passwords", select a name (e.g. "BulkMailer"), and click <strong>Create</strong>.</li>
+            <li>Copy the 16-character code shown on screen.</li>
+            <li>Enter <code>smtp.gmail.com</code> as Host, <code>587</code> as Port, your gmail address as Username, and paste the 16-character app password as the Password!</li>
+          </ol>
+        </div>
+      </details>
+
+      <!-- Outlook Guide -->
+      <details style="margin-bottom: 12px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--bg-primary);">
+        <summary style="cursor:pointer; background: var(--bg-secondary); padding: 10px 16px; font-size: var(--t-sm); font-weight: 600; color: var(--text-primary);">Microsoft Outlook / Hotmail</summary>
+        <div style="padding: 16px; font-size: var(--t-xs); line-height: 1.6; border-top: 1px solid var(--border); background: var(--surface);">
+          <p style="margin-top: 0; color: var(--text-secondary);">For Outlook / Microsoft 365, set the following configs:</p>
+          <ul style="margin-bottom: 0; padding-left: 20px; color: var(--text-secondary);">
+            <li><strong>Host</strong>: <code>smtp.office365.com</code></li>
+            <li><strong>Port</strong>: <code>587</code></li>
+            <li><strong>Encryption</strong>: STARTTLS (Secure toggle checked)</li>
+            <li><strong>Login</strong>: Your complete outlook email and password. (If 2FA is on, generate an App Password in Microsoft Security Settings).</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- Custom SMTP Guide -->
+      <details style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--bg-primary);">
+        <summary style="cursor:pointer; background: var(--bg-secondary); padding: 10px 16px; font-size: var(--t-sm); font-weight: 600; color: var(--text-primary);">Custom SMTP (Amazon SES, Mailgun, Brevo, Hostinger)</summary>
+        <div style="padding: 16px; font-size: var(--t-xs); line-height: 1.6; border-top: 1px solid var(--border); background: var(--surface);">
+          <p style="margin-top: 0; color: var(--text-secondary);">Simply log into your custom provider dashboard, go to "SMTP Settings", and grab the credentials:</p>
+          <ul style="margin-bottom: 0; padding-left: 20px; color: var(--text-secondary);">
+            <li><strong>Host</strong>: The custom endpoint (e.g. <code>smtp.sendgrid.net</code>, <code>smtp.brevo.com</code>).</li>
+            <li><strong>Port</strong>: Use <code>587</code> (STARTTLS) or <code>465</code> (SSL/TLS).</li>
+            <li><strong>Username / Password</strong>: Use the custom API credentials generated on your provider's dashboard.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+  </div>
+</dialog>
+
+<!-- Toast container -->
+<div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+<script>
+  document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+    document.getElementById('mobile-drawer').classList.add('open');
+    document.getElementById('drawer-backdrop').classList.add('open');
+  });
+  document.getElementById('close-drawer-btn').addEventListener('click', () => {
+    document.getElementById('mobile-drawer').classList.remove('open');
+    document.getElementById('drawer-backdrop').classList.remove('open');
+  });
+  document.getElementById('drawer-backdrop').addEventListener('click', () => {
+    document.getElementById('mobile-drawer').classList.remove('open');
+    document.getElementById('drawer-backdrop').classList.remove('open');
+  });
+</script>
+<script src="app.js" type="module"></script>
+</body>
+</html>

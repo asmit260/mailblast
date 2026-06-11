@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Colors */
+  --bg-primary: #09090b; /* Zinc 950 */
+  --bg-secondary: #18181b; /* Zinc 900 */
+  --surface: rgba(24, 24, 27, 0.7);
+  --surface-hover: rgba(39, 39, 42, 0.8);
+  
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa; /* Zinc 400 */
+  --text-muted: #71717a; /* Zinc 500 */
+  
+  --border: #27272a; /* Zinc 800 */
+  --border-strong: #3f3f46; /* Zinc 700 */
+  --border-focus: #6366f1; /* Indigo 500 */
+  
+  --primary: #6366f1; /* Indigo 500 */
+  --primary-hover: #4f46e5; /* Indigo 600 */
+  --primary-foreground: #ffffff;
+  
+  --secondary: #27272a;
+  --secondary-hover: #3f3f46;
+  --secondary-foreground: #fafafa;
+  
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  
+  --success: #10b981;
+  --warning: #f59e0b;
+  
+  /* Typography */
+  --font-body: 'Inter', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  
+  --t-xs: 0.75rem;
+  --t-sm: 0.875rem;
+  --t-base: 1rem;
+  --t-lg: 1.125rem;
+  --t-xl: 1.25rem;
+  --t-2xl: 1.5rem;
+  --t-3xl: 1.875rem;
+  
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  
+  /* Shadows & Effects */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.4);
+  --glass-blur: blur(12px);
+  
+  /* Radii */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  background-color: var(--bg-primary);
+  background-image: radial-gradient(circle at top center, rgba(99, 102, 241, 0.08), transparent 40%);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
