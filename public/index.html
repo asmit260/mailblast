@@ -3,8 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BulkMailer — Professional Email Campaigns</title>
-  <meta name="description" content="BulkMailer is a professional bulk email platform for sending campaigns with full SMTP control." />
+  <title>BulkMailer - Free Open Source Mass Email Sender App</title>
+  <meta name="description" content="BulkMailer is a free, open-source bulk email sender running locally in your browser. Send mass email campaigns securely via your own SMTP servers (Gmail, Outlook, SES) with no limits." />
+  <meta name="keywords" content="bulk email sender, mass email app, open source email marketing, free mailer, SMTP sender, transactional email" />
+  <meta name="author" content="Asmit" />
+  
+  <!-- Open Graph / Social SEO -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="BulkMailer - Free Open Source Mass Email Sender App" />
+  <meta property="og:description" content="Send mass email campaigns securely from your own machine using your own SMTP servers." />
+  <meta property="og:url" content="https://github.com/asmit260/mailblast" />
+  <meta property="og:site_name" content="BulkMailer" />
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BulkMailer - Free Mass Email Sender" />
+  <meta name="twitter:description" content="Send mass email campaigns securely from your own machine using your own SMTP servers." />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://github.com/asmit260/mailblast" />
+
+  <!-- Schema Markup (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "BulkMailer",
+        "operatingSystem": "Web",
+        "applicationCategory": "BusinessApplication",
+        "description": "BulkMailer is a local, open-source bulk email sender that allows users to send mass email campaigns securely via their own SMTP servers without third-party tracking.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Asmit"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is BulkMailer safe to use?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, BulkMailer runs fully locally on your physical machine. Your API keys, lists, and SMTP passwords are never transmitted to any central database or telemetry tracker."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I get an SMTP App Password for Gmail?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Go to Google Account Settings, search for 'App passwords', create one for 'BulkMailer', and use the 16-character code as your password with smtp.gmail.com."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z%22/><path d=%22m22 6-10 7L2 6%22/></svg>">
   <link rel="stylesheet" href="css/tokens.css" />
   <link rel="stylesheet" href="css/layout.css" />
