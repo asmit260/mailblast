@@ -69,10 +69,10 @@
   }
   </script>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z%22/><path d=%22m22 6-10 7L2 6%22/></svg>">
-  <link rel="stylesheet" href="css/tokens.css" />
-  <link rel="stylesheet" href="css/layout.css" />
-  <link rel="stylesheet" href="css/components.css" />
-  <link rel="stylesheet" href="css/motion.css" />
+  <link rel="stylesheet" href="css/tokens.css?v=3" />
+  <link rel="stylesheet" href="css/layout.css?v=3" />
+  <link rel="stylesheet" href="css/components.css?v=3" />
+  <link rel="stylesheet" href="css/motion.css?v=3" />
 </head>
 <body>
 <div id="drawer-backdrop" class="drawer-backdrop"></div>
@@ -98,18 +98,30 @@
       <div class="nav-divider"></div>
       <span class="nav-product">Ink v3</span>
       <div class="nav-divider"></div>
-      <button class="btn btn-ghost btn-sm" id="btn-show-help" style="font-size: var(--t-xs); height: 26px; padding: 0 8px; border: 1px solid var(--border); border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">Privacy & Guide</button>
+      <button class="btn btn-secondary btn-sm" id="btn-show-help" style="border-radius: 6px; padding: 4px 12px; font-weight: 500; display: inline-flex; align-items: center; transition: all 0.2s;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+        Privacy & Guide
+      </button>
       <div class="nav-divider"></div>
-      <a id="link-source" href="https://github.com/asmit260/mailblast" target="_blank" style="font-size: var(--t-xs); color: var(--text-secondary); text-decoration: none; padding: 0 8px; display: flex; align-items: center;">Source Code</a>
-      <a id="link-github" href="https://github.com/asmit260/mailblast" target="_blank" style="font-size: var(--t-xs); color: var(--text-secondary); text-decoration: none; padding: 0 8px; display: flex; align-items: center;">GitHub</a>
-      <a id="link-gmail" href="mailto:asmitrawat531@gmail.com" target="_blank" style="font-size: var(--t-xs); color: var(--text-secondary); text-decoration: none; padding: 0 8px; display: flex; align-items: center;">Email Me</a>
+      <a id="link-source" class="nav-link" href="https://github.com/asmit260/mailblast" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+        Source Code
+      </a>
+      <a id="link-github" class="nav-link" href="https://github.com/asmit260/mailblast" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+        GitHub
+      </a>
+      <a id="link-gmail" class="nav-link" href="mailto:asmitrawat531@gmail.com" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+        Email Me
+      </a>
     </div>
 
     <div class="nav-center">
       <span class="nav-campaign-name" id="nav-campaign-name">Untitled Campaign</span>
     </div>
 
-    <div class="nav-right">
+    <div class="nav-right" style="display: none;">
       <span class="nav-save-status" id="nav-save-status">Draft</span>
       <div class="nav-smtp-status">
         <div class="smtp-dot" id="nav-smtp-dot"></div>
@@ -200,7 +212,7 @@
 
             <div class="form-col-12 form-group">
               <label>Encryption</label>
-              <div class="toggle-wrapper" style="margin-top:2px;">
+              <div class="toggle-wrapper" style="margin-top:2px; display: flex; align-items: center; gap: 8px;">
                 <label class="ink-toggle" title="Enable TLS/SSL">
                   <input type="checkbox" id="smtp-secure" />
                   <div class="ink-toggle-track"></div>
@@ -829,6 +841,6 @@
     document.getElementById('drawer-backdrop').classList.remove('open');
   });
 </script>
-<script src="app.js" type="module"></script>
+<script src="app.js?v=3" type="module"></script>
 </body>
 </html>

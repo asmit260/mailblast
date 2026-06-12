@@ -65,8 +65,7 @@ export function initSmtp(state) {
   }
 
   function updateToggleThumb() {
-    const txt = secureEl.checked ? 'ON ' : 'OFF';
-    secureEl.nextElementSibling.textContent = txt;
+    // Removed text insertion per user request
   }
 
   async function testConnection() {

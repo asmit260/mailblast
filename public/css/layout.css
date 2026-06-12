@@ -48,6 +48,22 @@
   color: var(--text-secondary);
 }
 
+.nav-link {
+  font-size: var(--t-xs);
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+.nav-link:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
 @media (max-width: 900px) {
   .nav-divider, 
   #link-source, 
